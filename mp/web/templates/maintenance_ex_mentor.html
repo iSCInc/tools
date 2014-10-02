@@ -1,0 +1,16 @@
+<p>Unten siehst du eine Liste aller Mentoren die in dieser Datenbank kein Austrittsdatum besitzen, d.h. noch Mentoren sind. Sie sind allerdings nicht mehr in der <a href="https://de.wikipedia.org/wiki/Kategorie:Benutzer:Mentor" target="_blank">Mentor-Kategorie</a></p> eingetragen. Vorsicht, dies kann aber auch andere Gründe haben.
+<h2>Mentoren</h2>
+<table>
+  <tr><th>DB-Eintrag</th><th>Wikipedia-Benutzerseite</th></tr>
+<?php
+foreach ($this->data['mentor'] as $m)
+{
+?>
+   <tr>
+	<td><a href="index.php?action=viewmentor&id=<?= $m['mentor_user_id'] ?>"><?= $m['mentor_user_name'] ?></a></td>
+	<td><a href="http://de.wikipedia.org/wiki/Benutzer:<?= $m['mentor_user_name'] ?>">WP</a></td>
+   </tr>
+<?php 
+}
+?>
+</table>

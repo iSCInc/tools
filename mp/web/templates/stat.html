@@ -1,0 +1,64 @@
+<p>Im Mentorenprogramm wurden bisher <?= $this->data['mentee_count_all_db'] ?> Benutzer
+von insgesamt <?= $this->data['mentor_count_all_db'] ?> Mentoren betreut. Momentan
+sind <?= $this->data['newbie_count_db'] ?> Mentees in Betreuung und 
+<?= $this->data['mentor_count_db'] ?> Mentoren aktiv.</p>
+<?php
+$mo_db = (int) $this->data['mentor_count_db'];
+$mo_wp = (int) $this->data['mentor_count_wp'];
+$me_db = (int) $this->data['newbie_count_db'];
+$me_wp = (int) $this->data['newbie_count_wp'];
+?>
+<p>Es gibt <?php if ($mo_db == $mo_wp && $me_db == $me_wp) { ?>
+keine<?php } else { ?>
+<strong>eine</strong><?php } ?> Anweichung in der Mentoren- und Metee-Anzahl im Vergleich zu den Wikipedia-Kategorien.</p>
+
+<h2><?= $this->heading ?></h2>
+<p>Angezeigt wird hier die Anzahl der Betreuungsanfänge und -enden von Neulingen pro Kalenderwoche. Das müssen nich zwangsläufig neue Mentees, sondern können auch Wiederaufnahmen sein.</p>
+<?php
+$stats = $this->data['stats_mentees'];
+
+// initial values
+$year = 0;
+$week = 0;
+$chart = NULL;
+$dataSet = NULL;
+$startYearCounter = 0;
+$endYearCounter = 0;
+
+for($i = 0; ; ++$i) {
+   if ($i == count($stats)) {
+       // render last image
+       $chart->render("generated-stats-" .$year. ".png");
+          ?><img alt="Line chart" src="generated-stats-<?= $year ?>.png" style="border: 1px solid gray;"/><p class="yearly-sum">Insgesamt <?= $startYearCounter ?> Betreuungsanfänge und <?= $endYearCounter ?> Betreungsabschlüsse.</p><?php
+       break;
+   }
+
+   if ($year != $stats[$i]['s_year']) {
+       if ($year != 0) {
+          // render the previous image
+          $chart->render("generated-stats-" .$year. ".png");
+          ?><img alt="Line chart" src="generated-stats-<?= $year ?>.png" style="border: 1px solid gray;"/><p class="yearly-sum">Insgesamt <?= $startYearCounter ?> Betreuungsanfänge und <?= $endYearCounter ?> Betreungsabschlüsse.</p><?php
+       }
+       $year = $stats[$i]['s_year'];
+
+       // we need a new image
+       $chart = new LineChart(800, 250);
+       $dataSetStart = new XYDataSet();
+       $dataSetEnd   = new XYDataSet();
+       $chart->setTitle($year);
+
+       $dataSet = new XYSeriesDataSet();
+       $dataSet->addSerie("Anfang", $dataSetStart);
+       $dataSet->addSerie("Ende", $dataSetEnd);
+       $chart->setDataSet($dataSet);
+
+       $startYearCounter = 0;
+       $endYearCounter = 0; // reset
+   }
+   $week  = $stats[$i]['s_week'];
+   $dataSetStart->addPoint(new Point($week, $stats[$i]['s_count']));
+   $dataSetEnd  ->addPoint(new Point($week, $stats[$i]['e_count']));
+   $startYearCounter += $stats[$i]['s_count'];
+   $endYearCounter += $stats[$i]['e_count'];
+}
+?>

@@ -1,0 +1,19 @@
+<?php
+if ($this->data['what'] == 'success')
+{
+?>
+<p id="changepw-success">Das Passwort wurde erfolgreich geändert.</p>
+<?php
+}
+else
+{
+?>
+<form method="POST" action="index.php?action=changepw">
+ <label for="new_password">Neues Passwort</label>
+ <input type="password" name="new_password" id="new_password" />
+ <br />
+ <input type="submit" value="Ändern" />
+</form>
+<?php
+}
+?>

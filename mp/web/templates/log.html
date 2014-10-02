@@ -1,0 +1,18 @@
+<p>In der folgenden Tabelle sind die letzten 50 geloggten Änderung einsehbar. Für weitere Einsicht in das Log kannst du dich an <a href="mailto:ireas@toolserver.org">ireas</a> wenden.</p>
+
+<table>
+  <tr><th>ID</th><th>Zeitstempel</th><th>Benutzer</th><th>Aktion</th><th>Betroffen</th><th>Kommentar</th></tr>
+<?php
+foreach ($this->data['log_entries'] as $l)
+{
+?>
+  <tr><td><?= $l['log_id'] ?></td>
+      <td><?= $l['log_date'] ?></td>
+      <td><?= $l['log_user_name'] ?></td>
+      <td><?= $l['log_type'] ?></td>
+      <td><?= $l['log_target'] ?></td>
+      <td><?= $l['log_comment'] ?></td></tr>
+<?php
+}
+?>
+</table>

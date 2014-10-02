@@ -1,0 +1,33 @@
+<?php
+/*
+ * addcom_form.html
+ * Copyright (C) 2010 by Robin Krahl, Merlissimo and others
+ * 
+ * This file is published under the terms of the MIT license
+ * (http://www.opensource.org/licenses/mit-license.php) and the
+ * LGPL (http://www.gnu.org/licenses/lgpl.html).
+ *
+ * For more information, see http://toolserver.org/~dewpmp.
+ */
+?>
+<p id="em-back"><a href="index.php?action=viewmentor&amp;id=<?= $this->data['mid'] ?>">Zur Normalansicht</a></p>
+<form id="em-form" action="index.php?action=addcom&amp;id=<?= $this->data['mid'] ?>" method="post">
+  <table>
+    <tr>
+      <th><label for="cmid">Co-Mentor</label></th>
+      <td><select id="cmid" name="cmid">
+          <?php
+          foreach ($this->data['mentors'] as $m)
+          {
+          ?>
+            <option value="<?= $m['mentor_user_id'] ?>"><?= $m['mentor_user_name'] ?></option>
+          <?php
+          }
+          ?>
+          </select></td>
+    </tr>
+    <tr>
+      <td colspan="2" class="tac"><input type="submit"  value="Hinzufügen" /></td>
+    </tr>
+  </table>
+</form>

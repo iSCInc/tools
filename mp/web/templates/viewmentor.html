@@ -1,0 +1,146 @@
+<?php
+$m = $this->data["mentor"];
+?>
+<h2>Informationen<?php if ($this->access->is_editor()) { ?> <a href="index.php?action=edit&amp;what=mentor&amp;id=<?= $m['mentor_user_id'] ?>" class="mentor-edit-link">[Mentor bearbeiten]</a><?php } ?></h2>
+
+<table id="view-top-table">
+<tr>
+<td class="vtttd">
+  <table id="view-table" rules="all">
+    <tr id="view-in"><th>Eintritt</th><td><?= fd($m["mentor_in"]) ?></td></tr>
+    <tr id="view-out"><th>Austritt</th><td><?= fd($m["mentor_out"]) ?>
+<?php
+  $m_has_active_mentees = false;
+  foreach ($this->data['mentees'] as $mentee)
+  {
+     if ($mentee['mm_stop'] == NULL) {
+        $m_has_active_mentees = true;
+        break;
+     }
+  }
+  if ($m["mentor_out"] != NULL and $m_has_active_mentees)
+  {
+     ?><p>Es gibt noch betreute Mentees!</p><?php
+  } else if ($m["mentor_out"] == NULL and !$m_has_active_mentees)
+  {
+     ?><p>Es gibt zurzeit keine betreuten Mentees.</p><?php
+  }
+?>
+</td></tr>
+    <tr id="view-mentees"><th>Betreuungen</th><td><?= $this->data['mentee_mentor_count'] ?> Betreuungen – <a href="#mentees">Liste</a><br /><?= $this->data['mentee_count'] ?> einzelne Neulinge</td></tr>
+    <tr id="view-comentors"><th>Co-Mentoren<?php
+    if ($this->access->is_editor())
+    {
+    ?>
+     <a href="index.php?action=addcom&amp;id=<?= $m['mentor_user_id'] ?>" title="Co-Mentor hinzufügen">(+)</a>
+    <?php
+    } 
+    ?></th><td><ul><?php
+      foreach ($this->data['comentors'] as $cm)
+      {
+    ?>
+      <li><a href="index.php?action=view&amp;id=<?= $cm['mentor_user_id'] ?>"><?= $cm['mentor_user_name'] ?></a><?php
+      if ($this->access->is_editor())
+      {
+      ?>
+       <a href="index.php?action=delcom&amp;mid=<?= $m['mentor_user_id'] ?>&amp;cmid=<?= $cm['mentor_user_id'] ?>" title="Co-Mentor löschen">(-)</a>
+      <?php
+      }
+      ?></li>
+    <?php
+    }
+    ?></ul></td></tr>
+    
+   <?php
+    if ($m['mentor_award_level'] != 0)
+    {
+      $awards = array(1 => 'Bronze',
+                      2 => 'Silber',
+                      3 => 'Gold',
+                      4 => 'Platin',
+                      5 => 'Smaragd');
+   ?>
+    <tr id="view-award"><th>Auszeichnung</th><td><span class="award-<?= $m['mentor_award_level'] ?>"><?= $awards[$m['mentor_award_level']] ?></span></td></tr>
+   <?php
+    }
+   ?>
+  </table>
+</td>
+
+<td class="vtttd">
+<ul id="view-ul-right">
+<li id="view-userpage"><a href="http://de.wikipedia.org/wiki/Benutzer:<?= $m["mentor_user_name"] ?>">Wikipedia-Benutzerseite</a></li>
+<?php
+if ($m['mentor_has_barnstar'] == 1)
+{
+?>
+ <li id="view-barnstar">Träger des 'Order of Mentoring'.</li>
+<?php
+}
+?>
+
+<?php
+if (!empty($m["mentor_remark"]))
+{
+?>
+<li id="view-comment"><strong>Anmerkung:</strong> <?= $m["mentor_remark"] ?></li>
+<?php
+}
+?>
+<li id="view-updated">Letzte Aktualisierung: <?= fdt($m["mentor_lastupdate"]) ?></li>
+</ul>
+
+<p><strong>Erläuterung:</strong>
+<ul>
+<li><em>W</em>: Der Mentee hatte sich diesen Mentor ge<em>w</em>ünscht.</li>
+<li><em>N</em>: Der Mentor hatte diesen Mentee "zufällig" angenommen.</li>
+<li><em>?</em>: Der Status bzgl. Wunschmentor ist noch nicht gesetzt.</li>
+<li>Es wird hier unterschieden zwischen einer Aufnahme eines Neulings/Mentees, die mehrere Male geschehen kann, und dem Neuling selbst. Wenn es Mehrfachbetreuungen des selben Mentors gab, wird dies mit "<em>x Mal betreut</em>" vermerkt.
+</ul>
+
+</td>
+</tr>
+</table>
+
+<h2 id="view-mentees-all"><a id="mentees"></a>Betreuungen von Neulingen</h2>
+
+<?php
+if (empty($this->data['mentees']))
+{
+?>
+<p><em>Keine.</em></p>
+<?php
+}
+else
+{
+?>
+<table id="listmentees-table">
+  <tr id="listmentees-headers">
+    <th>Benutzername</th>
+    <th>Aktivität</th>
+    <th>Aufnahme</th>
+    <th>Betreuungsende</th>
+    <?php if ($this->access->is_editor()) { ?><th>Bearbeiten</th><?php } ?>
+  </tr>
+  <?php
+  foreach ($this->data['mentees'] as $mentee)
+  {
+  ?>
+  <tr><td class="listmentees-mentee"><a href="index.php?action=viewmentee&amp;id=<?= $mentee['mentee_user_id'] ?>"><?= $mentee['mentee_user_name'] ?></a>
+      (<? if ($mentee['mm_type'] == '0') {?>?<? } else if ($mentee['mm_type'] == '1') { ?>N<? } else if ($mentee['mm_type'] == '2') { ?>W<? } ?><?
+          if ($mentee['mentee_entrance'] > 1) { ?>; <?= $mentee['mentee_entrance'] ?> Mal betreut<? } ?>)
+</td>
+      <td class="listmentees-activity"><?php if ($mentee['mentee_active']) { ?>aktiv<?php } else { ?>inaktiv<?php } ?></td>
+      <td class="listmentees-in"><?= fdt($mentee['mm_start']) ?></td>
+      <td class="listmentees-out"><?= fdt($mentee['mm_stop']) ?></td>
+      <?php if ($this->access->is_editor()) { ?>
+        <td class ="listmentees-edit"><a href="index.php?action=editmm&amp;mentee_id=<?= $mentee['mentee_user_id'] ?>&amp;mentor_id=<?= $m['mentor_user_id'] ?>" title="bearbeiten">±</a></td>
+      <?php } ?></tr>
+  <?php
+  }
+  ?>
+</table>
+<?php
+}
+?>
+

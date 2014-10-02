@@ -1,0 +1,85 @@
+  </div>
+  </div>
+
+  <div id="mw_portlets">
+
+  <div id="p-navi" class="portlet">
+    <h5>Navigation</h5>
+    <div class="pBody">
+    <ul>
+      <li><a href="index.php">Startseite</a></li>
+      <li><a href="index.php?action=mentorlist">Mentorenübersicht</a></li>
+      <li><a href="index.php?action=mentees">Menteeübersicht</a></li>
+      <li><a href="index.php?action=maintenance">Wartungsseiten</a></li>
+      <li><a href="index.php?action=stat">Statistik</a></li>
+      <li><a href="index.php?action=about">Weitere Informationen</a></li>
+      <li><a href="index.php?action=index">Alle Seiten</a></li>
+    </ul>
+    </div>
+  </div>
+
+  <div id="p-search" class="portlet">
+    <h5>Schnellsuche</h5>
+    <div class="pBody">
+      <form action="index.php" method="get">
+        <div class="tac">
+          <input type="text" name="search-content" size="10" />
+        <input type="hidden" name="action" value="search" />
+        <input type="hidden" name="search-active" value="on" />
+        <input type="hidden" name="search-inactive" value="on" />
+        <input type="hidden" name="search-where" value="all" />
+        <input type="submit" value="Suchen" />
+      </div>
+      </form>
+    </div>
+  </div>
+
+  <div id="p-overview" class="portlet">
+    <h5>Übersicht</h5>
+    <div class="pBody">
+      <table style="width:100%;">
+        <tr><th></th><th><abbr title="Die Daten der WMLabs-Datenbank">DB</abbr></th><th><abbr title="Die Daten der Wikipedia-Kategorien">WP</abbr></th></tr>
+        <tr><th><abbr title="Die Anzahl der momentan betreuten Neulinge">Neulinge</abbr></th><td><?= $this->data['newbie_count_db'] ?></td><td><?= $this->data['newbie_count_wp'] ?></td></tr>
+        <tr><th><abbr title="Die Anzahl der momentan aktiven Neulinge">Mentoren</abbr></th><td><?= $this->data['mentor_count_db'] ?></td><td><?= $this->data['mentor_count_wp'] ?></td></tr>
+      </table>
+    </div>
+  </div>
+
+  </div>
+  </div>
+
+  <div class="mw_clear"></div>
+
+  <div id="p-personal" class="portal">
+  <div class="pBody">
+    <h5>Anmeldung</h5>
+    <ul>
+<?php
+  if ($this->access->logged_in())
+  {
+?>
+      <li id="h-logged-in"><a>Angemeldet als <?= $this->access->user() ?></a></li>
+      <li><a href="index.php?action=changepw">Passwort ändern</a></li>
+      <li><a href="index.php?action=logout">Abmelden</a></li>
+<?php
+  }
+  else
+  {
+?>
+      <li id="h-login"><a href="index.php?action=login">Anmelden</a></li>
+<?php
+  }
+?>
+    </ul>
+  </div>
+  </div>
+
+  <div id="footer">
+    <ul id="f-list">
+      <li>Mentorenprogramm auf Wikimedia-Labs. <a href="index.php?action=about">Mehr Informationen.</a></li>
+      <li><a href="http://validator.w3.org/check?uri=referer">Valides XHTML 1.1</a></li>
+    </ul>
+  </div>
+  </body>
+</html>
+

@@ -1,0 +1,8 @@
+* Requirements
+  - Python:
+     - oursql
+     - jinja2
+  - MySQL
+
+* To do
+  - Check on error in confirmation.html and user.html

@@ -1,0 +1,91 @@
+<?php
+$m = $this->data["mentee"];
+?>
+<h2>Informationen <?php if ($this->access->is_editor()) { ?><a href="index.php?action=edit&amp;what=mentee&amp;id=<?= $m['mentee_user_id'] ?>" class="mentee-edit-link">[Mentee bearbeiten]</a><?php } ?></h2>
+<table id="view-top-table">
+<tr>
+<td class="vtttd">
+ <table id="view-table">
+    <tr id="view-in"><th>Eintritt</th><td><?= fd($m["mentee_in"]) ?></td></tr>
+    <tr id="view-out"><th>Austritt</th><td><?= fd($m["mentee_out"]) ?></td></tr>
+    <tr id="view-articles"><th>Erstellte Artikel</th><td><?= $this->data['article_count'] ?> – <a href="#articles">Liste</a></td></tr>
+    <tr id="view-mentors"><th><? if (count($this->data['mentors']) == 1) { ?>Mentor<? } else { ?>Mentoren<? } ?></th><td><ul><?php
+ $count = count($this->data['mentors']);
+ for ($i = 0; $i < $count; $i++)
+ {
+   $mentor = $this->data['mentors'][$i];
+   ?><li><a href="index.php?action=viewmentor&amp;id=<?= $mentor['mentor_user_id'] ?>"><?= $mentor['mentor_user_name'] ?></a>
+   (<? if ($mentor['mm_type'] == '0') {?>?<? } elseif ($mentor['mm_type'] == '1') { ?>N<? } elseif ($mentor['mm_type'] == '2') { ?>W<? } ?>;
+   <?= fdt($mentor['mm_start']) ?> - <? if ($mentor['mm_stop'] != NULL) {?><?= fdt($mentor['mm_stop']) ?><? } else { ?>jetzt<? } ?>)<?php
+   if ($this->access->is_editor()) {
+     ?> (<a href="index.php?action=editmm&amp;mentee_id=<?= $m['mentee_user_id'] ?>&amp;mentor_id=<?= $mentor['mentor_user_id'] ?>&amp;start=<?= $mentor['mm_start'] ?>" title="bearbeiten">∓</a>)<?php
+   }
+   ?></li><?php
+ }
+ ?></ul><?php
+
+   if ($this->access->is_editor()) {
+     ?><p><a href="index.php?action=editmm&mentee_id=<?= $m['mentee_user_id'] ?>&create=new">Neue Mentor-Beziehung hinzufügen</a></p><?php
+   }
+       ?></td></tr>
+     <tr id="view-editcount"><th>Bearbeitungen</th><td><?= number_format($this->data['mentee_edit_count'], 0, '', '.') ?> (<a href="/~tparis/pcount/index.php?name=<?= $m['mentee_user_name'] ?>&lang=de&wiki=wikipedia" title="Editcounter">Editcounter</a>; <a href="http://de.wikipedia.org/wiki/Spezial:Beitr%C3%A4ge/<?= $m['mentee_user_name'] ?>" tiltle="Beiträge">Beiträge</a>)</td></tr>
+     <tr id="view-activity"><th>Aktivität</th><td><?php if ($this->data['activity']) { ?>aktiv<?php } else { ?>inaktiv<?php } ?> (<a href="/~stimmberechtigung/index.php?user=<?= $m['mentee_user_name'] ?>" title="Stimmberechtigung">SB</a>)</td></tr>
+  </table>
+</td>
+
+<td class="vtttd">
+<ul id="view-ul-right">
+<li id="view-userpage"><a href="http://de.wikipedia.org/wiki/Benutzer:<?= $m["mentee_user_name"] ?>">Wikipedia-Benutzerseite</a></li>
+  
+
+<?php
+if (!empty($m["mentee_remark"]))
+{
+?>
+<li id="view-comment"><strong>Anmerkung:</strong> <?= $m["mentee_remark"] ?></li>
+<?php
+}
+?>
+
+<li id="view-updated">Letzte Aktualisierung: <?= fdt($m["mentee_lastupdate"]) ?></li>
+</ul>
+<strong>Erläuterung:</strong>
+<ul>
+<li><em>Bearbeitungen</em> gibt alle Bearbeitungen dieses Benutzers an; der Link führt zum Editcounter.</li>
+<li><em>Aktivität</em> gibt an, ob der Benutzer im letzten Monat editiert hat; der Link führt zum Stimmberechtigungs-Tool.</li>
+<li>Die <em>Artikel</em> beziehen sich nicht nur auf die Phase der Betreuung, sondern sind davon unabhängig.</li>
+<li><em>W</em>: Der Mentee hatte sich diesen Mentor ge<em>w</em>ünscht.</li>
+<li><em>N</em>: Der Mentor hatte diesen Mentee "zufällig" angenommen.</li>
+<li><em>?</em>: Der Status bzgl. Wunschmentor ist noch nicht gesetzt.</li>
+</ul>
+</td>
+</tr>
+</table>
+
+<h2 id="view-articles-all"><a id="articles"></a>Artikel</h2>
+<?php
+if (empty($this->data['articles']))
+{
+?>
+<p><em>Keine.</em></p>
+<?php
+}
+else
+{
+?>
+<table id="listarticles-table">
+  <tr id="listarticles-headers"><th>Artikel</th><th>Anlegedatum</th></tr>
+  <?php
+  foreach ($this->data['articles'] as $article)
+  {
+  ?>
+  <tr><td class="listarticles-article"><a href="http://de.wikipedia.org/w/index.php?oldid=<?= $article['ma_rev_id'] ?>"><?= $article['title'] ?></a></td>
+      <td class="listarticles-creation"><?= fd($article['ma_creation_date']) ?></td>
+  <?php
+  }
+  ?>
+</table>
+<?php
+}
+?>
+

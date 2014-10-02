@@ -1,0 +1,24 @@
+<?php
+$wp = $this->data['wp_mentees'];
+$db = $this->data['all_mentees'];
+$all = array_unique(array_merge($wp, $db));
+?>
+
+<table>
+  <tr><th>Anzahl Neulinge WP</th><td><?= count($wp) ?></td></tr>
+  <tr><th>Anzahl Neulinge DB</th><td><?= count($db) ?></td></tr>
+</table>
+
+<h2>Diskrepanzen</h2>
+  <table>
+    <tr><th>Mentee</th><th>WP?</th><th>DB?</th></tr>
+  <?php
+  foreach ($all as $mentee):
+    if (in_array($mentee, $wp) != in_array($mentee, $all)):
+  ?>
+    <tr><td><?= $mentee ?></td><td><?= in_array($mentee, $wp) ?></td><td><?= in_array($mentee, $db) ?></td></tr>
+    <?php
+    endif;
+  endforeach;
+  ?>
+</table>

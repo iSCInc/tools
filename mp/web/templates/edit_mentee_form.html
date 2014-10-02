@@ -1,0 +1,63 @@
+<?php
+/*
+ * edit_mentee_form.html
+ * Copyright (C) 2010 by Robin Krahl, Merlissimo and others
+ * 
+ * This file is published under the terms of the MIT license
+ * (http://www.opensource.org/licenses/mit-license.php) and the
+ * LGPL (http://www.gnu.org/licenses/lgpl.html).
+ *
+ * For more information, see http://toolserver.org/~dewpmp.
+ */
+
+$m = $this->data['mentee'];
+?>
+<script type="text/javascript">
+ /* <![CDATA[ */
+ // validate user input
+ function validate() {
+   remove_errors();
+   var everythings_fine = true;
+   
+   var unnode  = document.getElementById("mentee_user_name");
+   var innode  = document.getElementById("mentee_in");
+   var outnode = document.getElementById("mentee_out");
+   var user_name = unnode.value;
+   var mein      = innode.value;
+   var meout     = outnode.value;
+   
+   if (user_name.empty()) {
+     everythings_fine = false;
+     show_error("#mentee_user_name");
+   }
+   
+   if (!mein.empty() && !validate_timestamp(mein)) {
+     everythings_fine = false;
+     show_error("#mentee_in");
+   }
+   
+   if (!meout.empty() && !validate_timestamp(meout)) {
+     everythings_fine = false;
+     show_error("#mentee_out");
+   }
+   
+   return everythings_fine;
+ }
+ /* ]> */
+ </script>
+<p id="em-back"><a href="index.php?action=viewmentee&amp;id=<?= $m['mentee_user_id'] ?>">Zur Normalansicht</a></p>
+<form id="em-form" action="index.php?action=edit&amp;id=<?= $m['mentee_user_id'] ?>&amp;what=mentee" method="post" onsubmit="return validate();">
+  <table>
+    <tr>
+      <th><label for="mentee_user_name">Benutzername</label></th>
+      <td><input type="text" name="mentee_user_name" id="mentee_user_name" value="<?= $m['mentee_user_name'] ?>" /></td>
+    </tr>
+    <tr>
+      <th><label for="mentee_remark">Anmerkung</label></th>
+      <td><textarea name="mentee_remark" id="mentee_remark" rows="5"><?= $m['mentee_remark'] ?></textarea></td>
+    </tr>
+    <tr>
+      <td colspan="2" class="tac"><input type="submit"  value="Aktualisieren" /></td>
+    </tr>
+  </table>
+</form>

@@ -1,0 +1,54 @@
+<p><a href="index.php?action=maintenance_mm_history">zeitlichen Verlauf der Betreuungen anzeigen</a></p>
+<p>Unten siehst du eine Liste aller momentan betreuter Mentees. Die Einfärbung der Menteenamen bedeutet:</p>
+<dl>
+  <di><dt class="mentee-critical">rot</dt><dd>Der letzte Edit liegt mehr als 60 Tage zurück.</dd></di>
+  <di><dt class="mentee-problem">orange</dt><dd>Die Betreuung des Benutzers dauert bereits mehr als fünf Monate</dd></di>
+  <di><dt class="mentee-okay">grün</dt><dd>Keines der beiden Kriterien ist erfüllt.</dd></di>
+</dl>
+
+<h2>Menteeübersicht</h2>
+
+<table>
+  <tr><th>Mentee</th><th>Mentor</th><th>Aktiv (60 Tage)?</th><th>&gt; 5 Monate?</tr>
+<?php
+foreach ($this->data['mentees'] as $m)
+{
+  $d    = new DateTime();
+  $d->setTimestamp(strtotime('-5 months', time()));
+  $in   = DateTime::createFromFormat("Y-m-d H:i:s", $m['mm_start']);
+  $diff = $d->diff($in);
+  $too_long = (bool) $diff->invert;
+
+  $class = "mentee-okay";
+  if ($too_long)
+  {
+    $class = "mentee-problem";
+  }
+  if (!$m['recent_edit'])
+  {
+    $class = "mentee-critical";
+  }
+?>
+  <tr><td class="<?= $class ?>"><a href="index.php?action=viewmentee&id=<?= $m['mentee_user_id'] ?>"><?= $m['mentee_user_name'] ?></a></td><td><a href="index.php?action=viewmentor&id=<?= $m['mentor_user_id'] ?>"><?= $m['mentor_user_name'] ?></a></td><?php
+  if ($m['recent_edit'])
+  {
+?><td class="highlight-okay">ja</td><?php
+  }
+  else
+  {
+?><td class="highlight-problem">nein</td><?php
+  } 
+?><?php
+  if (!$too_long)
+  {
+?><td class="highlight-okay">nein</td><?php
+  }
+  else
+  {
+?><td class="highlight-problem">ja</td><?php
+  }
+?></tr>
+<?php
+}
+?>
+</table>

@@ -1,0 +1,123 @@
+<div class="box">
+<?php
+if (!($this->data["prev_offset"] === -1 && $this->data["next_offset"] === -1))
+{
+?>
+<p class="lm-navi">
+<?php
+}
+?>
+<?php
+if ($this->data["prev_offset"] != -1)
+{
+?>
+<span class="lm-prev"><a href="index.php?action=mentorlist&amp;offset=<?= $this->data["prev_offset"] ?>&amp;count=<?= $this->data["count"] ?>">Zurück</a></span>
+<?php
+}
+if ($this->data["prev_offset"] != -1 && $this->data["next_offset"] != -1)
+{
+?>
+ | 
+<?php
+}
+if ($this->data["next_offset"] != -1)
+{
+?>
+<span class="lm-next"><a href="index.php?action=mentorlist&amp;offset=<?= $this->data["next_offset"] ?>&amp;count=<?= $this->data["count"] ?>">Weiter</a></span>
+<?php
+}
+if (!($this->data["prev_offset"] === -1 && $this->data["next_offset"] === -1))
+{
+?>
+</p>
+<hr />
+<?php
+}
+?>
+
+<div style="margin-left: 5px 10px">
+<form id="lm-count" action="index.php" method="get">
+ <label for="count">Mentoren pro Seite</label> <select name="count" id="count">
+    <option<?php if ($this->data["count"] == 200) { ?> selected="selected"<?php } ?>>200</option>
+    <option<?php if ($this->data["count"] == 500) { ?> selected="selected"<?php } ?>>500</option>
+    <option<?php if ($this->data["count"] == 5000) { ?> selected="selected"<?php } ?>>5000</option></select> <input type="submit" value="anzeigen" />
+  <input type="checkbox" name="no_activity_filter" value="1" <?php if($this->data['no_activity_filter'] == 1) { ?>checked<?php } ?>> <label>Auch ehemalige Mentoren anzeigen</label>
+  <input type="hidden" name="offset" value="<?= $this->data['offset'] ?>" />
+  <input type="hidden" name="action" value="mentorlist" /></li>
+</form>
+<?php
+if (!$this->data['all'])
+{
+?>
+<form id="lm-list-all" action="index.php" method="get">
+  <input type="submit" value="Alle anzeigen" />
+  <input type="hidden" name="action" value="mentorlist" />
+  <input type="hidden" name="no_activity_filter" value="<?= $this->data['no_activity_filter'] ?>" />
+  <input type="hidden" name="all"    value="1" />
+</form>
+<?php
+}
+?>
+</div>
+</div>
+
+<?php
+if (!empty($this->data["mentors"]))
+{
+?>
+<table id="lm-list" cellpadding=2>
+  <tr><th>Benutzername</th><th>Eintritt</th><th>Austritt</th><th>Auszeichnung</th><th>Zurzeit aktive Mentees</th></tr>
+<?php
+$awards = array(0 => '', 1 => 'Bronze', 2 => 'Silber', 3 => 'Gold', 4 => 'Platin', 5 => 'Smaragd');
+foreach ($this->data["mentors"] as $mentor)
+  {
+?>
+  <tr>
+    <td><a href="index.php?action=viewmentor&amp;id=<?= $mentor["mentor_user_id"] ?>"<?php if ($mentor['mentor_out']) {?> style='color: grey;'<?php } ?> ><?= $mentor["mentor_user_name"] ?></a></td>
+    <td><?= fd($mentor['mentor_in']) ?></td>
+    <td><?= fd($mentor['mentor_out']) ?></td>
+    <td><span class="award-<?= $mentor['mentor_award_level'] ?>"><?= $awards[$mentor['mentor_award_level']] ?></span></td>
+    <td align="right"><?= $mentor['mm_active_mentee_count'] ?></td>
+  </tr>
+<?php
+  }
+ ?>
+</table>
+<?php
+}
+?>
+
+<?php
+if (!($this->data["prev_offset"] === -1 && $this->data["next_offset"] === -1))
+{
+?>
+<div class="box">
+<p class="lm-navi">
+<?php
+}
+if ($this->data["prev_offset"] != -1)
+{
+?>
+<span class="lm-prev"><a href="index.php?action=mentorlist&amp;offset=<?= $this->data["prev_offset"] ?>&amp;count=<?= $this->data["count"] ?>">Zurück</a></span>
+<?php
+}
+if ($this->data["prev_offset"] != -1 && $this->data["next_offset"] != -1)
+{
+?>
+ | 
+<?php
+}
+if ($this->data["next_offset"] != -1)
+{
+?>
+<span class="lm-next"><a href="index.php?action=mentorlist&amp;offset=<?= $this->data["next_offset"] ?>&amp;count=<?= $this->data["count"] ?>">Weiter</a></span>
+<?php
+}
+if (!($this->data["prev_offset"] === -1 && $this->data["next_offset"] === -1))
+{
+?>
+</p>
+</div>
+<?php
+}
+?>

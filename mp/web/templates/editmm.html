@@ -1,0 +1,169 @@
+<?php
+  $p = $this->data['pos'];
+  if (count($p) === 1)
+  {
+?>
+<script type="text/javascript">
+  /*<![CDATA[*/
+ function set_start(time, parseIt)
+  {
+     if (parseIt) {
+       time = time + ""; // make it a string
+       $('#start')[0].value = time.slice(0, 4) + "-" + time.slice(4, 6) + "-" + time.slice(6, 8) + " " + time.slice(8, 10) + ":" + time.slice(10, 12) + ":" + time.slice(12, 14);
+     } else {
+       $('#start')[0].value = time;
+     }
+  }
+
+  function set_stop(time, parseIt)
+  {
+     if (parseIt) {
+       time = time + ""; // make it a string
+       $('#end')[0].value = time.slice(0, 4) + "-" + time.slice(4, 6) + "-" + time.slice(6, 8) + " " + time.slice(8, 10) + ":" + time.slice(10, 12) + ":" + time.slice(12, 14);
+     } else {
+       $('#end')[0].value = time;
+     }
+  }
+
+  function stop_empty()
+  {
+    $('#end')[0].value = '';
+  }
+
+ function validate() {
+   remove_errors();
+   var everythings_fine = true;
+
+   var stonode  = document.getElementById("end");
+   var stanode  = document.getElementById("start");
+   var stop  = stonode.value;
+   var start = stanode.value;
+
+   if (start == "" || !validate_datetimestamp(start)) {
+     everythings_fine = false;
+     show_error("#start");
+   }
+
+   if (!stop.empty() && !validate_datetimestamp(stop)) {
+     everythings_fine = false;
+     show_error("#end");
+   }
+
+   return everythings_fine;
+ }
+  /*]]>*/
+</script>
+<h2>Bearbeite Betreuung</h2>
+
+<table id="view-top-table">
+<tr>
+<td class="vtttd">
+
+<form action="index.php?action=editmm&amp;mentor_id=<?= $p[0]['mm_mentor_id']
+  ?>&amp;mentee_id=<?= $p[0]['mm_mentee_id'] ?>&amp;start=<?= $p[0]['mm_start']
+  ?>&amp;end=<?= $p[0]['mm_stop'] ?>&amp;create=<?= $p[0]['create_new_item'] ?>" method="post" onsubmit="return validate();">
+  <table id="view-table">
+    <tr><th>Mentor</th><td>
+      <select name="new_mentor_id" id="type" size="1"><?php
+      $mentoren = $this->data['mentors'];
+      foreach ($mentoren as $key => $m)
+      {
+         ?><option value="<?= $m['mentor_user_id']?>" <?php
+            if($m['mentor_out']) { ?> style="color: grey;" <?php } ?><?php
+            if($m['mentor_user_id']==$p[0]['mm_mentor_id']) { ?>selected<?php }
+         ?>><?= $m['mentor_user_name'] ?></option><?php
+      }
+      ?></select></td></tr>
+    <tr><th>Mentee</th><td><a href="index.php?action=viewmentee&amp;id=<?= $p[0]['mm_mentee_id'] ?>"><?= $p[0]['mentee_user_name'] ?></a></td></tr>
+    <tr><th><label for="start">Beginn</label></th>
+        <td><input type="text" name="start" value="<?= $p[0]['mm_start'] ?>" id="start" />
+            <span class="javascript-only"><a onclick="set_start(get_datetime_now(), false)" style="cursor: pointer;">(jetzt)</a></span></td></tr>
+    <tr><th><label for="end">Ende</label></th>
+        <td><input type="text" name="end" value="<?= $p[0]['mm_stop']  ?>" id="end" />
+            <span class="javascript-only"><a onclick="set_stop(get_datetime_now(), false)" style="cursor: pointer;">(jetzt)</a></span> <span class="javascript-only"><a onclick="set_stop('', false)" style="cursor: pointer;">(noch betreut)</a></span></td></tr>
+    <tr><th><label for="type">Aufnahmetyp</label></th>
+        <td><select name="type" id="type" size="1">
+           <option value=0 <?php if($p[0]['mm_type']==0) { ?>selected<?php } ?>>nicht gesetzt</option>
+           <option value=1 <?php if($p[0]['mm_type']==1) { ?>selected<?php } ?>>Normal</option>
+           <option value=2 <?php if($p[0]['mm_type']==2) { ?>selected<?php } ?>>Wunschmentor</option>
+        </select></td></tr>
+    <tr><td colspan="2" class="tac"><input type="submit" value="Ändern" /></td></tr>
+  </table>
+</form>
+
+</td>
+<td class="vtttd">
+<p><b>Hinweise:</b></p>
+<ul>
+<li>Lasse das Ende-Feld leer, wenn die Betreuung noch andauert.</li>
+<li>Wenn der Mentee nun von einem anderen Mentor betreut wird, ändere nicht einfach das <em>Mentor-Feld</em>, sondern schließe diese Betreuung ab und erstelle einen neuen Eintrag.</li>
+</ul>
+</td></tr></table>
+
+<form action="index.php?action=delete_mm" method="post">
+  <input type="hidden" name="mentor_id" value="<?= $p[0]['mm_mentor_id'] ?>" />
+  <input type="hidden" name="mentee_id" value="<?= $p[0]['mm_mentee_id'] ?>" />
+  <input type="hidden" name="mm_start" value="<?= $p[0]['mm_start'] ?>" />
+  <input type="submit" class="delete-mm" value="Lösche diese Betreuung!" /> Es gibt keine Bestätigungsabfrage. Der Eintrag des Mentees bleibt davon unberührt.
+</form>
+
+<h2>Mentee-Benutzerseitenhistorie (<a href="//de.wikipedia.org/w/index.php?title=Benutzer:<?= $p[0]['mentee_user_name'] ?>&action=history" target="_blank">original</a>)</h2>
+<table>
+<tr><th width="90">Kopiere Zeit<br />nach oben</th><th>Zeit (UTC!)</th><th>Bearbeiter</th><th>Kommentar</th></tr>
+<?php
+
+ function highlightByComment($comment)
+ {
+    if (stristr($comment, 'MP') || stristr($comment, 'übernomm') || stristr($comment, 'Mentor'))
+    {
+       return 'style="background-color: #ffe773;"';
+    }
+    return '';
+ }
+
+ function highlightByUser($user_name, $mentor_name)
+ {
+    if ($user_name == $mentor_name)
+    {
+       return 'style="background-color: #ffe773;"';
+    }
+    return '';
+ }
+
+ $history = $this->data['mentee_page_history'];
+ if (count($history) >= 50) {
+    ?><p>Hinweis: es werden nur die ersten 50 Zeilen angezeigt.</p><?php
+ }
+
+ foreach ($history as $key => $edit)
+ {
+   ?><tr>
+      <td><span class="javascript-only"><a onclick="set_start(<?= $edit['rev_timestamp'] ?>, true)" style="cursor: pointer;">Anfang</a></span>
+          <span class="javascript-only"><a onclick="set_stop(<?= $edit['rev_timestamp'] ?>, true)" style="cursor: pointer;">Ende</a></span></td>
+      <td><?= fdt($edit['rev_timestamp']) ?></td>
+      <td <?= highlightByUser($edit['rev_user_text'], $p[0]['mentor_user_name']) ?>><?= htmlspecialchars($edit['rev_user_text']) ?></td>
+      <td <?= highlightByComment($edit['rev_comment']) ?>><?= htmlspecialchars($edit['rev_comment']) ?></td>
+    </tr><?php
+ }
+?></table>
+
+<?php
+  }
+  else
+  {
+?>
+<p>Es gibt mehrere Beziehungen, auf die diese Angaben zutreffen:</p>
+<ul>
+<?php
+    foreach ($p as $mm)
+    {
+?>
+  <li><a href="index.php?action=editmm&amp;mentor_id=<?= $mm['mm_mentor_id'] ?>&amp;mentee_id=<?= $mm['mm_mentee_id']
+      ?>&amp;start=<?= $mm['mm_start'] ?>&amp;end=<?= $mm['mm_stop'] ?>">Mentor <?= $mm['mentor_user_name'] ?>, Mentee <?= $mm['mentee_user_name'] ?> (<?= fd($mm['mm_start']) ?> bis <?= fd($mm['mm_stop']) ?>)</a></li>
+<?php
+    }
+?>
+</ul>
+<?php
+  }
+?>

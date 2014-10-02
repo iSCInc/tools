@@ -1,0 +1,20 @@
+<p>Unten siehst du eine Liste aller Menteebetreuungen für die bisher nicht angegeben wurde, ob sie per Menteewunsch oder "normal" zustande kamen.</p>
+<h2>Menteeübersicht</h2>
+
+<table>
+  <tr><th>Betreuungsanfang</th><th>Betreuungsende</th><th>Mentee</th><th>Mentor</th><th>Betreuung bearbeiten</tr>
+<?php
+foreach ($this->data['mentee_mentor'] as $m)
+{
+?>
+   <tr>
+	<td><?= $m['mm_start'] ?></td>
+	<td><?= $m['mm_stop'] ?></td>
+	<td><a href="index.php?action=viewmentee&id=<?= $m['mentee_user_id'] ?>"><?= $m['mentee_user_name'] ?></a></td>
+	<td><a href="index.php?action=viewmentor&id=<?= $m['mentor_user_id'] ?>"><?= $m['mentor_user_name'] ?></a></td>
+	<td><?php if ($this->access->is_editor()) { ?><a href="index.php?action=editmm&amp;mentee_id=<?= $m['mentee_user_id'] ?>&amp;mentor_id=<?= $m['mentor_user_id'] ?>">bearbeiten</a><?php } ?></td>
+   </tr>
+<?php 
+}
+?>
+</table>

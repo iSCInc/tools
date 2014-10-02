@@ -1,0 +1,20 @@
+<?php
+if ($this->data['m'] == "post")
+{
+?>
+<p id="login-success">Willkommen, <?= $this->data['user'] ?>! Du wurdest erfolgreich angemeldet.</p>
+<?php
+}
+else
+{
+?>
+<form id="login-form" action="index.php?action=login" method="post">
+  <table id="login-table">
+    <tr id="login-user"><th>Wikipedia-Benutzername</th><td><input type="text" name="lg_user" /></td></tr>
+    <tr id="login-pass"><th>Passwort</th><td><input type="password" name="lg_pass" /></td></tr>
+    <tr id="login-submit"><td colspan="2" class="tac"><input type="submit" value="Anmelden" /></td></tr>
+  </table>
+</form>
+<?php
+}
+?>

@@ -1,0 +1,43 @@
+#! /bin/sh
+#$ -N UpdateCreatedArticles
+#$ -hard
+#$ -l sqlprocs-s5=1
+
+SQL="
+CREATE TEMPORARY TABLE mpages (pid INT, revid INT, PRIMARY KEY (pid), UNIQUE INDEX(revid));
+INSERT INTO mpages (pid)
+ SELECT DISTINCT rev_page
+  FROM mentee m
+   INNER JOIN dewiki_p.revision ON mentee_user_id = rev_user
+   INNER JOIN dewiki_p.page ON rev_page = page_id 
+  WHERE rev_deleted=0 AND page_namespace=0;
+DELETE mp
+ FROM mpages mp
+  INNER JOIN dewiki_p.page ON mp.pid = page_id
+ WHERE page_namespace!=0 OR page_is_redirect=1;
+CREATE TEMPORARY TABLE firstrevision (pid INT, revid INT NOT NULL, PRIMARY KEY (pid), UNIQUE INDEX(revid));
+INSERT INTO firstrevision (pid, revid)
+ SELECT mp.pid, MIN(a.rev_id)
+  FROM mpages mp
+   INNER JOIN dewiki_p.revision a ON mp.pid=a.rev_page 
+  WHERE a.rev_deleted=0
+  GROUP BY a.rev_page;
+INSERT IGNORE INTO mentee_articles (ma_mentee_id, ma_page_id, ma_rev_id, ma_creation_date)
+ SELECT mentee_id, fr.pid, fr.revid, r.rev_timestamp 
+  FROM firstrevision fr
+   INNER JOIN dewiki_p.revision r ON fr.revid = r.rev_id 
+   INNER JOIN mentee m ON r.rev_user = m.mentee_user_id;
+"
+if mysql -vvv -hdewiki-p.userdb p_dewpmp_testing -e "$SQL"
+then
+  echo "...done."
+else
+  echo "... failed."
+  sleep 66
+  if ["$RESTARTED" -lt 30]
+  then
+    exit 99
+  else
+    exit 100
+  fi
+fi
