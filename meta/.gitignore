@@ -1,0 +1,9 @@
+*.cs
+*.csproj
+*.phpproj
+*.sln
+*.suo
+*.user
+bin/
+obj/
+tool-labs/backend/modules/cache/wikimedia-wikis.dat
